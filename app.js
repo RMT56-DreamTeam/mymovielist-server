@@ -56,6 +56,12 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.get('/movies');
+app.get('/movies/:id');
+app.post('/movies');
+app.put('/movies/:id');
+app.delete('/movies/:id');
+
 app.listen(3000, () => {
   console.log("Server is running on http://localhost:3000");
 });

@@ -1,8 +1,6 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-const { hashPassword } = require('../helpers/bcrypt');
+"use strict";
+const { Model } = require("sequelize");
+const { hashPassword } = require("../helpers/bcrypt");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -14,54 +12,57 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  User.init({
-    email: {
-      type: DataTypes.STRING,
-      unique: {
-        args: true,
-        msg: "Email already exists"
+  User.init(
+    {
+      email: {
+        type: DataTypes.STRING,
+        unique: {
+          args: true,
+          msg: "Email already exists",
+        },
+        validate: {
+          isEmail: {
+            args: true,
+            msg: "Invalid email format",
+          },
+          notEmpty: {
+            args: true,
+            msg: "Email is required",
+          },
+          notNull: {
+            args: true,
+            msg: "Email is required",
+          },
+        },
       },
-      validate: {
-        isEmail: {
-          args: true,
-          msg: "Invalid email format"
+      password: {
+        type: DataTypes.STRING,
+        validate: {
+          notEmpty: {
+            args: true,
+            msg: "Password is required",
+          },
+          notNull: {
+            args: true,
+            msg: "Password is required",
+          },
+          len: {
+            args: [6],
+            msg: "Password minimum 6 characters",
+          },
         },
-        notEmpty: {
-          args: true,
-          msg: "Email is required"
-        },
-        notNull: {
-          args: true,
-          msg: "Email is required"
-        }
-      }
+      },
     },
-    password: {
-      type: DataTypes.STRING,
-      validate: {
-        notEmpty: {
-          args: true,
-          msg: "Password is required"
+    {
+      hooks: {
+        beforeCreate: (user, options) => {
+          user.password = hashPassword(user.password);
         },
-        notNull: {
-          args: true,
-          msg: "Password is required"
-        },
-        len: {
-          args: [6],
-          msg: "Password minimum 6 characters"
-        }
-      }
+      },
+      sequelize,
+      modelName: "User",
     }
-  }, {
-    hooks: {
-      beforeCreate: (user, options) => {
-        user.password = hashPassword(user.password);
-      }
-    },
-    sequelize,
-    modelName: 'User',
-  });
-  
+  );
+
   return User;
 };
